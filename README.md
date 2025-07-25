@@ -7,7 +7,7 @@ This repository contains an initial implementation of a meta-training framework 
 ## Project Overview
 
 
-<img width="790" height="237" alt="Screenshot 2025-07-25 at 3 37 24 PM" src="https://github.com/user-attachments/assets/09676650-7420-44c5-b809-444739cde77e" />
+<center><img width="790" height="237" alt="Screenshot 2025-07-25 at 3 37 24 PM" src="https://github.com/user-attachments/assets/09676650-7420-44c5-b809-444739cde77e" /></center> 
 
 
 ---
