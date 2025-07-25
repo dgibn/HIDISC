@@ -26,8 +26,12 @@ This repository contains an initial implementation of a meta-training framework 
 
 ---
 
-## 🧪 Training Instructions
-```bash
+## 🧪 Training
+```bash bash_scripts/train.sh``
+
+## 🧪 Testing
+
+```bash bash_scripts/test.sh
 
 ```
 ## Acknowledgements
