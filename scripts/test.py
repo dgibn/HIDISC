@@ -105,7 +105,7 @@ if args.dataset_name in all_domains_mapping:
 else:
     raise ValueError(f"Dataset '{args.dataset_name}' is not supported.")
 
-selected_classes=create_list(source_domain=os.path.join(f"/raid/biplab/datasets/vaibhav/{args.dataset_name}", all_domains[0]), num_classes=num_classes_mapping[args.dataset_name])
+selected_classes=create_list(source_domain=os.path.join(f"{args.dataset_name}", all_domains[0]), num_classes=num_classes_mapping[args.dataset_name])
 print("Length of Selected Classes=",len(selected_classes))
 print("Length of not selected Classes=",total_classes_mapping[args.dataset_name]-num_classes_mapping[args.dataset_name])
 
@@ -117,7 +117,7 @@ for train_domain, model_file in source_domains.items():
         if domain!=train_domain:
             folder_path = f"Episode_all_{args.dataset_name}/{domain}"
             target_Dataloader = create_ViT_test_dataloaders(
-                target_domain=os.path.join(f"/raid/biplab/datasets/vaibhav/{args.dataset_name}", domain),
+                target_domain=os.path.join(f"{args.dataset_name}", domain),
                 csv_dir_path=folder_path,
                 batch_size=BATCH_SIZE,
                 transform=train_transform,

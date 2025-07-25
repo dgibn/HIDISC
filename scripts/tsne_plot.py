@@ -232,41 +232,41 @@ c=0.03
 # Define source domains for each dataset
 source_domains_mapping = {
     'Office_Home': {
-        "Art": f"/users/student/pg/pg23/vaibhav.rathore/HypDGCD/checkpoints/{args.dataset_name}/Art/Intermediate_Art_hyper_bus_manual_trained_model_{args.checkpoint}.pkl",
-        "Clipart": f"/users/student/pg/pg23/vaibhav.rathore/HypDGCD/checkpoints/{args.dataset_name}/Clipart/Intermediate_Clipart_hyper_bus_manual_trained_model_{args.checkpoint}.pkl",
-        "Product": f"/users/student/pg/pg23/vaibhav.rathore/HypDGCD/checkpoints/{args.dataset_name}/Product/Intermediate_Product_hyper_bus_manual_trained_model_{args.checkpoint}.pkl",
-        "Real_world": f"/users/student/pg/pg23/vaibhav.rathore/HypDGCD/checkpoints/{args.dataset_name}/Real_world/Intermediate_Real_world_hyper_bus_manual_trained_model_{args.checkpoint}.pkl"
+        "Art": f"HypDGCD/checkpoints/{args.dataset_name}/Art/Intermediate_Art_hyper_bus_manual_trained_model_{args.checkpoint}.pkl",
+        "Clipart": f"HypDGCD/checkpoints/{args.dataset_name}/Clipart/Intermediate_Clipart_hyper_bus_manual_trained_model_{args.checkpoint}.pkl",
+        "Product": f"HypDGCD/checkpoints/{args.dataset_name}/Product/Intermediate_Product_hyper_bus_manual_trained_model_{args.checkpoint}.pkl",
+        "Real_world": f"HypDGCD/checkpoints/{args.dataset_name}/Real_world/Intermediate_Real_world_hyper_bus_manual_trained_model_{args.checkpoint}.pkl"
     },
     'PACS': {
-        "art_painting": f"/users/student/pg/pg23/vaibhav.rathore/HypDGCD/checkpoints/{args.dataset_name}/art_painting/Intermediate_art_painting_hyper_bus_manual_trained_model_{args.checkpoint}.pkl",
-        "photo": f"/users/student/pg/pg23/vaibhav.rathore/HypDGCD/checkpoints/{args.dataset_name}/photo/Intermediate_photo_hyper_bus_manual_trained_model_{args.checkpoint}.pkl",
-        "cartoon": f"/users/student/pg/pg23/vaibhav.rathore/HypDGCD/checkpoints/{args.dataset_name}/cartoon/Intermediate_cartoon_hyper_bus_manual_trained_model_{args.checkpoint}.pkl",
-        "sketch": f"/users/student/pg/pg23/vaibhav.rathore/HypDGCD/checkpoints/{args.dataset_name}/sketch/Intermediate_sketch_hyper_bus_manual_trained_model_{args.checkpoint}.pkl"
+        "art_painting": f"HypDGCD/checkpoints/{args.dataset_name}/art_painting/Intermediate_art_painting_hyper_bus_manual_trained_model_{args.checkpoint}.pkl",
+        "photo": f"HypDGCD/checkpoints/{args.dataset_name}/photo/Intermediate_photo_hyper_bus_manual_trained_model_{args.checkpoint}.pkl",
+        "cartoon": f"HypDGCD/checkpoints/{args.dataset_name}/cartoon/Intermediate_cartoon_hyper_bus_manual_trained_model_{args.checkpoint}.pkl",
+        "sketch": f"HypDGCD/checkpoints/{args.dataset_name}/sketch/Intermediate_sketch_hyper_bus_manual_trained_model_{args.checkpoint}.pkl"
     },
     'Domain_Net': {
-        "clipart": f"/users/student/pg/pg23/vaibhav.rathore/HypDGCD/checkpoints/{args.dataset_name}/clipart/Intermediate_clipart_avg_hyper_bus_manual_trained_model_{args.checkpoint}epoch.pkl",
-        "sketch": f"/users/student/pg/pg23/vaibhav.rathore/HypDGCD/checkpoints/{args.dataset_name}/sketch/Intermediate_sketch_avg_hyper_bus_manual_trained_model_{args.checkpoint}epoch.pkl",
-        "painting": f"/users/student/pg/pg23/vaibhav.rathore/HypDGCD/checkpoints/{args.dataset_name}/painting/Intermediate_painting_avg_hyper_bus_manual_trained_model_{args.checkpoint}epoch.pkl",
+        "clipart": f"HypDGCD/checkpoints/{args.dataset_name}/clipart/Intermediate_clipart_avg_hyper_bus_manual_trained_model_{args.checkpoint}epoch.pkl",
+        "sketch": f"HypDGCD/checkpoints/{args.dataset_name}/sketch/Intermediate_sketch_avg_hyper_bus_manual_trained_model_{args.checkpoint}epoch.pkl",
+        "painting": f"HypDGCD/checkpoints/{args.dataset_name}/painting/Intermediate_painting_avg_hyper_bus_manual_trained_model_{args.checkpoint}epoch.pkl",
     }
 }
 
 # proj_source_domains_mapping = {
 #     'Office_Home': {
-#         "Art": f"/users/student/pg/pg23/vaibhav.rathore/HypDGCD/checkpoints/{args.dataset_name}/Art/Intermediate_Art_hyper_bus_manual_trained_model_c0.03_{args.checkpoint}.pkl",
-#         "Clipart": f"/users/student/pg/pg23/vaibhav.rathore/HypDGCD/checkpoints/{args.dataset_name}/Clipart/Intermediate_Clipart_hyper_bus_manual_trained_model_c0.03_{args.checkpoint}.pkl",
-#         "Product": f"/users/student/pg/pg23/vaibhav.rathore/HypDGCD/checkpoints/{args.dataset_name}/Product/Intermediate_Product_hyper_bus_manual_trained_model_c0.03_{args.checkpoint}.pkl",
-#         "Real_world": f"/users/student/pg/pg23/vaibhav.rathore/HypDGCD/checkpoints/{args.dataset_name}/Real_world/Intermediate_Real_world_hyper_bus_manual_trained_model_c0.03_{args.checkpoint}.pkl"
+#         "Art": f"HypDGCD/checkpoints/{args.dataset_name}/Art/Intermediate_Art_hyper_bus_manual_trained_model_c0.03_{args.checkpoint}.pkl",
+#         "Clipart": f"HypDGCD/checkpoints/{args.dataset_name}/Clipart/Intermediate_Clipart_hyper_bus_manual_trained_model_c0.03_{args.checkpoint}.pkl",
+#         "Product": f"HypDGCD/checkpoints/{args.dataset_name}/Product/Intermediate_Product_hyper_bus_manual_trained_model_c0.03_{args.checkpoint}.pkl",
+#         "Real_world": f"HypDGCD/checkpoints/{args.dataset_name}/Real_world/Intermediate_Real_world_hyper_bus_manual_trained_model_c0.03_{args.checkpoint}.pkl"
 #     },
 #     'PACS': {
-#         "art_painting": f"/users/student/pg/pg23/vaibhav.rathore/HypDGCD/checkpoints/{args.dataset_name}/art_painting/Projection_Head_art_painting_hyper_bus_manual_trained_model_{args.checkpoint}.pkl",
-#         "photo": f"/users/student/pg/pg23/vaibhav.rathore/HypDGCD/checkpoints/{args.dataset_name}/photo/Projection_Head_photo_hyper_bus_manual_trained_model_{args.checkpoint}.pkl",
-#         "cartoon": f"/users/student/pg/pg23/vaibhav.rathore/HypDGCD/checkpoints/{args.dataset_name}/cartoon/Projection_Head_cartoon_hyper_bus_manual_trained_model_{args.checkpoint}.pkl",
-#         "sketch": f"/users/student/pg/pg23/vaibhav.rathore/HypDGCD/checkpoints/{args.dataset_name}/sketch/Projection_Head_sketch_hyper_bus_manual_trained_model_{args.checkpoint}.pkl"
+#         "art_painting": f"HypDGCD/checkpoints/{args.dataset_name}/art_painting/Projection_Head_art_painting_hyper_bus_manual_trained_model_{args.checkpoint}.pkl",
+#         "photo": f"HypDGCD/checkpoints/{args.dataset_name}/photo/Projection_Head_photo_hyper_bus_manual_trained_model_{args.checkpoint}.pkl",
+#         "cartoon": f"HypDGCD/checkpoints/{args.dataset_name}/cartoon/Projection_Head_cartoon_hyper_bus_manual_trained_model_{args.checkpoint}.pkl",
+#         "sketch": f"HypDGCD/checkpoints/{args.dataset_name}/sketch/Projection_Head_sketch_hyper_bus_manual_trained_model_{args.checkpoint}.pkl"
 #     },
 #     'Domain_Net': {
-#         "clipart": f"/users/student/pg/pg23/vaibhav.rathore/HypDGCD/checkpoints/{args.dataset_name}/clipart/Intermediate_clipart_avg_hyper_bus_manual_trained_model_{args.checkpoint}epoch.pkl",
-#         "sketch": f"/users/student/pg/pg23/vaibhav.rathore/HypDGCD/checkpoints/{args.dataset_name}/sketch/Intermediate_sketch_avg_hyper_bus_manual_trained_model_{args.checkpoint}epoch.pkl",
-#         "painting": f"/users/student/pg/pg23/vaibhav.rathore/HypDGCD/checkpoints/{args.dataset_name}/painting/Intermediate_painting_avg_hyper_bus_manual_trained_model_{args.checkpoint}epoch.pkl",
+#         "clipart": f"HypDGCD/checkpoints/{args.dataset_name}/clipart/Intermediate_clipart_avg_hyper_bus_manual_trained_model_{args.checkpoint}epoch.pkl",
+#         "sketch": f"HypDGCD/checkpoints/{args.dataset_name}/sketch/Intermediate_sketch_avg_hyper_bus_manual_trained_model_{args.checkpoint}epoch.pkl",
+#         "painting": f"HypDGCD/checkpoints/{args.dataset_name}/painting/Intermediate_painting_avg_hyper_bus_manual_trained_model_{args.checkpoint}epoch.pkl",
 #     }
 # }
 
@@ -330,7 +330,7 @@ else:
     class_names = {i: f"Class {i}" for i in range(num_classes_mapping[args.dataset_name])}
 
 
-selected_classes=create_list(source_domain=os.path.join(f"/users/student/Datasets/vaibhav/{args.dataset_name}", all_domains[0]), num_classes=num_classes_mapping[args.dataset_name])
+selected_classes=create_list(source_domain=os.path.join(f"{args.dataset_name}", all_domains[0]), num_classes=num_classes_mapping[args.dataset_name])
 
 for train_domain, model_file in source_domains.items():
     adapted_model = load_model(model_file)
@@ -339,9 +339,9 @@ for train_domain, model_file in source_domains.items():
     print(f"Model loaded successfully for {train_domain}")
     for domain in all_domains:
         if domain!=train_domain:
-            folder_path = f"/users/student/pg/pg23/vaibhav.rathore/HypDGCD/Episode_all_{args.dataset_name}/{domain}"
+            folder_path = f"HypDGCD/Episode_all_{args.dataset_name}/{domain}"
             target_Dataloader = create_ViT_test_dataloaders(
-                target_domain=os.path.join(f"/users/student/Datasets/vaibhav/{args.dataset_name}", domain),
+                target_domain=os.path.join(f"{args.dataset_name}", domain),
                 csv_dir_path=folder_path,
                 batch_size=128,
                 transform=train_transform,
@@ -396,7 +396,7 @@ for train_domain, model_file in source_domains.items():
                 X_sampled = np.concatenate(sampled_feats)
                 labels_sampled = np.array(sampled_labels)
                 # plot_tsne(
-                #     tsne_dir=f"/users/student/pg/pg23/vaibhav.rathore/HypDGCD/tsne_dir/{args.dataset_name}/{train_domain}",
+                #     tsne_dir=f"HypDGCD/tsne_dir/{args.dataset_name}/{train_domain}",
                 #     X=X_sampled,
                 #     labels=labels_sampled,
                 #     domain_name=domain,
@@ -405,7 +405,7 @@ for train_domain, model_file in source_domains.items():
                 # )
                 # new hyperbolic UMAP call
                 plot_hyperbolic(
-                    tsne_dir=f"/users/student/pg/pg23/vaibhav.rathore/HypDGCD/tsne_dir/{args.dataset_name}/{train_domain}",
+                    tsne_dir=f"HypDGCD/tsne_dir/{args.dataset_name}/{train_domain}",
                     domain_name=domain,
                     X=X_sampled,
                     labels=labels_sampled,

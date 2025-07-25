@@ -121,10 +121,10 @@ curvature = nn.Parameter(torch.tensor(args.c, device=device, dtype=torch.float32
                          requires_grad=True)
 
 # Define paths and directories
-source_domain = f"/users/student/Datasets/vaibhav/{args.dataset_name}/{source_domain_name}"
-task_model_path = f"/users/student/pg/pg23/vaibhav.rathore/HypDGCD/checkpoints/{args.dataset_name}/{source_domain_name}/task_model_bus_{source_domain_name}_{args.c}.pkl"
-os.makedirs(f"/users/student/pg/pg23/vaibhav.rathore/HypDGCD/checkpoints/{args.dataset_name}/{source_domain_name}", exist_ok=True)
-tsne_dir_path = f"/users/student/pg/pg23/vaibhav.rathore/HypDGCD/tsne_dir/{args.dataset_name}/{source_domain_name}"
+source_domain = f"{args.dataset_name}/{source_domain_name}"
+task_model_path = f"HypDGCD/checkpoints/{args.dataset_name}/{source_domain_name}/task_model_bus_{source_domain_name}_{args.c}.pkl"
+os.makedirs(f"HypDGCD/checkpoints/{args.dataset_name}/{source_domain_name}", exist_ok=True)
+tsne_dir_path = f"HypDGCD/tsne_dir/{args.dataset_name}/{source_domain_name}"
 os.makedirs(tsne_dir_path, exist_ok=True)
 target_data_csv = os.path.join(os.path.dirname(os.path.dirname(__file__)), f"data/dataset_path_{args.dataset_name}.csv")
 
@@ -169,7 +169,7 @@ selected_classes = create_list(source_domain=source_domain, num_classes=NUM_CLAS
 class_names = {i: selected_classes[i] for i in range(NUM_CLASSES)}
 
 # Make combined CSV file for all Synthetic Domains
-combine_csv_path = f'/users/student/pg/pg23/vaibhav.rathore/HypDGCD/Episode_all_{args.dataset_name}/{source_domain_name}'
+combine_csv_path = f'HypDGCD/Episode_all_{args.dataset_name}/{source_domain_name}'
 csv_combined_path = create_combined_csv(combine_csv_path=combine_csv_path,
                                         source_domain=source_domain,
                                         synthetic_domains=target_dataset_paths,
@@ -315,5 +315,5 @@ for epoch in tqdm(range(TASK_EPOCHS), desc="Task Training Epochs"):
     torch.cuda.empty_cache()
     
     if epoch % 5 == 0:
-        save_model(model=global_model, path=f"/users/student/pg/pg23/vaibhav.rathore/HypDGCD/checkpoints/{args.dataset_name}/{source_domain_name}/Intermediate_{source_domain_name}_hyper_all_in_trained_model_{epoch}.pkl")
+        save_model(model=global_model, path=f"HypDGCD/checkpoints/{args.dataset_name}/{source_domain_name}/Intermediate_{source_domain_name}_hyper_all_in_trained_model_{epoch}.pkl")
 
