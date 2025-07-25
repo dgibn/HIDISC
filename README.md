@@ -12,8 +12,7 @@ without relying on target access; (ii) Tangent CutMix, a curvature-aware interpo
 
 Complementing these are three loss-driven modules: (iii) Prototype Anchoring, which aligns seen-class embeddings to fixed ideal prototypes on the Poincaré boundary, reserving central space for novel classes; (iv) Adaptive Outlier Loss, which ensures synthetic samples are repelled from known-class clusters, promoting open-space regularization; and (v) Hybrid Hyperbolic Contrastive Loss, which combines geodesic and angular similarity to improve local cohesion and global separability.
 
-<center><img width="790" height="237" alt="Screenshot 2025-07-25 at 3 37 24 PM" src="https://github.com/user-attachments/assets/09676650-7420-44c5-b809-444739cde77e" /></center> 
-
+<center> <img width="790" height="237" alt="Screenshot 2025-07-25 at 3 37 24 PM" src="https://github.com/user-attachments/assets/09676650-7420-44c5-b809-444739cde77e"/> </center> 
 
 ---
 
@@ -28,17 +27,12 @@ Complementing these are three loss-driven modules: (iii) Prototype Anchoring, wh
 - DINO pre-trained ViT from FacebookResearch
 
 ---
+## 🧪 Running the Code
 
-## 🧠 Key Components
-
-
----
-
-## 🧪 Training
+i) For training 
 ```bash bash_scripts/train.sh``
 
-## 🧪 Testing
-
+ii) For testing
 ```bash bash_scripts/test.sh``
 
 ``
