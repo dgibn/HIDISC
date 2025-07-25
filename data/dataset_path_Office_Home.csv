@@ -1,0 +1,11 @@
+index,data_path
+6,"/Augmented_OfficeHome/data/Urban_Background_Dataset/Art"
+4,"/Augmented_OfficeHome/data/Rainy_Background_Dataset/Art"
+1,"/Augmented_OfficeHome/data/Snow_Background_Dataset/Art"
+2,"/Augmented_OfficeHome/data/Beach_Background_Dataset/Art"
+3,"/Augmented_OfficeHome/data/Black_Background_Dataset/Art"
+5,"/Augmented_OfficeHome/data/White_Background_Dataset/Art"
+7,"/Augmented_OfficeHome/data/Art_Jitter"
+8,"/Augmented_OfficeHome/data/Clipart_Jitter"
+9,"/Augmented_OfficeHome/data/Product_Jitter"
+10,"/Augmented_OfficeHome/data/Real_World_Jitter"

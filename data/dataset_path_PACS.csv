@@ -1,0 +1,7 @@
+index,data_path
+1,"/Augmented_PACS/Black_Background_Dataset"
+3,"/Augmented_PACS/Grey_Background_Dataset"
+4,"/Augmented_PACS/Rainy_Background_Dataset"
+6,"/Augmented_PACS/White_Background_Dataset"
+6,"/Augmented_PACS/Snow_Background_Dataset"
+6,"/Augmented_PACS/Orange_Background_Dataset"
