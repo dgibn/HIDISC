@@ -9,6 +9,8 @@ This repository contains the official implementation of the paper **"HIDISC: A H
 
 ## 📄 Abstract
 
+![Model Architecture](/projects_imgs/model.png)
+
 HIDISC addresses the challenging problem of **Domain Generalization (DG)** combined with **Generalized Category Discovery (GCD)**. In this setting, a model trained on a source domain must generalize to unseen target domains, recognizing known classes while simultaneously discovering and clustering novel classes.
 
 Traditional Euclidean methods often struggle to capture the complex, hierarchical relationships inherent in such open-world scenarios. HIDISC leverages **hyperbolic geometry** (specifically the Poincaré ball model) to learn representations that naturally accommodate hierarchy and improve the separation between known and novel categories.
