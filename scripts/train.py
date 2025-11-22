@@ -1,3 +1,22 @@
+"""
+Training script for HIDISC: A Hyperbolic Framework for Domain Generalization with Generalized Category Discovery.
+
+Reference:
+    "HIDISC: A Hyperbolic Framework for Domain Generalization with Generalized Category Discovery"
+    Vaibhav Rathore, Divyam Gupta, Biplab Banerjee.
+
+This script implements the core training pipeline described in the paper:
+1.  **Hyperbolic Representation Learning**: Maps features to the Poincaré ball with learnable curvature.
+2.  **Tangent CutMix**: Synthesizes pseudo-novel samples in the tangent space (Euclidean) to simulate open-world scenarios.
+3.  **Unified Loss Function**:
+    *   **Penalized Busemann Loss**: Aligns samples with prototypes using Busemann functions.
+    *   **Hyperbolic InfoNCE**: Contrastive regularization in hyperbolic space.
+    *   **Adaptive Outlier Repulsion**: Ensures novel samples are separated from known prototypes.
+
+Usage:
+    python scripts/train.py --dataset_name PACS --source_domain_name photo --do_hyperbolic True
+"""
+
 import os
 import sys
 import csv
@@ -10,19 +29,18 @@ parent_dir = os.path.dirname(current_dir)
 sys.path.append(parent_dir)
 
 import torch
+import torch.nn.functional as F
 import numpy as np
 import torch.nn as nn
 from tqdm import tqdm
 
 # Local project utilities
-from project_utils.my_utils import *
-from project_utils.loss import *
-from project_utils.data_setup import *
-# from project_utils.hyperbolic_utils import *
-from project_utils.hutils import *
-from project_utils.pmath import *
-from project_utils.plot_tsne import plot_tsne
-# from project_utils.grad_cam import TempClassifier,generate_gradcam_visualization
+from project_utils.my_utils import set_seed,save_model,create_list,str2bool,DINOHead,create_combined_csv
+from project_utils.loss import hyperbolic_info_nce_logits,prototype_loss,PenalizedBusemannLoss
+from project_utils.data_setup import ContrastiveLearningViewGenerator,get_combined_dataloader
+from project_utils.hutils import hypo_dist,get_alpha_d,clip_feature
+from project_utils.pmath import expmap0
+from data.augmentations import get_transform
 
 # --------------------------
 # WandB Integration
@@ -42,7 +60,7 @@ set_seed(42)
 # Argument Parser Setup
 # -------------------------------------------------------------------
 parser = argparse.ArgumentParser(
-    description="Meta-training for Domain Generalization on Image Data."
+    description="Training for Domain Generalization-Generalized Category Discovery"
 )
 parser.add_argument('--task_epochs', type=int, default=50,
                     help='Number of task-specific training epochs')
@@ -77,8 +95,8 @@ args = parser.parse_args()
 # --------------------------
 # Initialize wandb
 # # --------------------------
-# wandb.login(key="4883a15d69990032fd28ba66b983caf542ea78f5")
-# wandb.init(project="HypDGCD_Project", config=vars(args))
+# wandb.login(key="")
+# wandb.init(project="HIDISC_Project", config=vars(args))
 # config = wandb.config
 
 # -------------------------------------------------------------------
@@ -114,18 +132,17 @@ emb_dim = 32    # desired embedding dimension from projection head
 ALPHA = 0.7
 do_hyperbolic = args.do_hyperbolic
 prototype_dim = args.prototype_dim
-penalty_value = args.penalty  # for penalized Busemann loss
+penalty_value = args.penalty  # Penalty value ($\phi$) for the penalized Busemann loss
 episode=2
-# make c a learnable parameter
+
+# Learnable Curvature Parameter ($c$)
+# As proposed in HIDISC, we use a learnable curvature to adapt the geometry to the dataset complexity.
 curvature = nn.Parameter(torch.tensor(args.c, device=device, dtype=torch.float32),
                          requires_grad=True)
 
 # Define paths and directories
 source_domain = f"{args.dataset_name}/{source_domain_name}"
-task_model_path = f"HypDGCD/checkpoints/{args.dataset_name}/{source_domain_name}/task_model_bus_{source_domain_name}_{args.c}.pkl"
-os.makedirs(f"HypDGCD/checkpoints/{args.dataset_name}/{source_domain_name}", exist_ok=True)
-tsne_dir_path = f"HypDGCD/tsne_dir/{args.dataset_name}/{source_domain_name}"
-os.makedirs(tsne_dir_path, exist_ok=True)
+os.makedirs(f"HIDISC/checkpoints/{args.dataset_name}/{source_domain_name}", exist_ok=True)
 target_data_csv = os.path.join(os.path.dirname(os.path.dirname(__file__)), f"data/dataset_path_{args.dataset_name}.csv")
 
 # Read the target dataset paths from the CSV file
@@ -145,7 +162,7 @@ train_transform = ContrastiveLearningViewGenerator(base_transform=train_transfor
 
 # Load the VITB16 model pre-trained with DINO and remove the classification head
 global_model = torch.hub.load('facebookresearch/dino:main', 'dino_vitb16', pretrained=True)
-# global_model = torch.hub.load('facebookresearch/dinov2', 'dinov2_vitb14',pretrained=True)
+
 global_model.head = nn.Identity()
 global_model = global_model.to(device)
 
@@ -154,9 +171,6 @@ for param in global_model.parameters():
     param.requires_grad = False
 for param in global_model.blocks[-1].parameters():
     param.requires_grad = True
-
-# Save the initial task model
-# save_model(model=global_model, path=task_model_path)
 
 # Define the Projection Head for the INFO-NCE loss
 projection_head = DINOHead(in_dim=feat_dim, out_dim=emb_dim, nlayers=3)
@@ -169,7 +183,7 @@ selected_classes = create_list(source_domain=source_domain, num_classes=NUM_CLAS
 class_names = {i: selected_classes[i] for i in range(NUM_CLASSES)}
 
 # Make combined CSV file for all Synthetic Domains
-combine_csv_path = f'HypDGCD/Episode_all_{args.dataset_name}/{source_domain_name}'
+combine_csv_path = f'HIDISC/Episode_all_{args.dataset_name}/{source_domain_name}'
 csv_combined_path = create_combined_csv(combine_csv_path=combine_csv_path,
                                         source_domain=source_domain,
                                         synthetic_domains=target_dataset_paths,
@@ -204,6 +218,8 @@ task_scheduler = torch.optim.lr_scheduler.CosineAnnealingLR(task_optimizer,
 # -------------------------------------------------------------------
 # Prototype Learning Setup
 # -------------------------------------------------------------------
+# Initialize prototypes and optimize them to be well-separated on the hypersphere.
+# These prototypes serve as anchors for the Busemann loss.
 num_classes = num_classes_mapping[args.dataset_name]
 proto_epochs = 1000
 proto_lr = 0.1
@@ -228,7 +244,7 @@ repel_margin = None  # Adaptive outlier margin
 # -------------------------------------------------------------------
 # Main Training Loop
 # -------------------------------------------------------------------
-for epoch in tqdm(range(TASK_EPOCHS), desc="Task Training Epochs"):
+for epoch in tqdm(range(TASK_EPOCHS), desc="Training Epochs"):
     global_model.train()
     projection_head.train()
     total_loss = 0
@@ -250,7 +266,12 @@ for epoch in tqdm(range(TASK_EPOCHS), desc="Task Training Epochs"):
         features = projection_head(image_features)
         features = clip_feature(features, r=radius[args.dataset_name])
         
-        # 2) feature‐mix in tangent to simulate novel
+        # -------------------------------------------------------------------
+        # Tangent CutMix (Curvature-aware Interpolation)
+        # -------------------------------------------------------------------
+        # Synthesize pseudo-novel samples by mixing features in the tangent space
+        # (Euclidean space at the origin) before mapping to the hyperbolic manifold.
+        # This helps preserve manifold consistency as described in the paper.
         B = features.size(0)
         idx = torch.randperm(B, device=device)
         f1, f2 = features, features[idx]
@@ -259,7 +280,11 @@ for epoch in tqdm(range(TASK_EPOCHS), desc="Task Training Epochs"):
         ).float().to(device)
         f_mix = lam * f1 + (1 - lam) * f2
         
-        # Map features to hyperbolic space if enabled
+        # -------------------------------------------------------------------
+        # Hyperbolic Mapping
+        # -------------------------------------------------------------------
+        # Map features to hyperbolic space (Poincaré ball) using the exponential map
+        # with learnable curvature `c`.
         if do_hyperbolic:
             features_hyp = expmap0(features, c=curvature)
             z_mix      = expmap0(f_mix, c=curvature)
@@ -267,37 +292,42 @@ for epoch in tqdm(range(TASK_EPOCHS), desc="Task Training Epochs"):
             features_hyp = features
             z_mix      = f_mix
         
-        # Ensure embeddings lie in the Poincaré ball via tanh
+        # Ensure embeddings lie in the Poincaré ball via tanh (numerical stability)
         z = torch.tanh(features_hyp)
         z_mix= torch.tanh(z_mix)
         
-        # --- Fix for Dimension Mismatch ---
-        # In this version, we replicate prototypes for 2 views by concatenation.
-        # Here, since our z is of shape [BATCH_SIZE * n_views, prototype_dim],
-        # we assume n_views==2 and build batch_prototypes of shape [BATCH_SIZE * 2, prototype_dim]
         batch_prototypes = torch.cat([prototypes[numerical_labels] for _ in range(2)], dim=0)
         
-        # Compute penalized Busemann loss (applied to entire z and batch_prototypes)
+        # -------------------------------------------------------------------
+        # Unified Loss Calculation
+        # -------------------------------------------------------------------
+        
+        # 1. Penalized Busemann Loss
+        # Aligns samples with prototypes using Busemann functions, penalized by `phi`.
         loss_busemann = busemann_loss(z, batch_prototypes)
         total_busemann_loss += loss_busemann.item()
         
-        # Compute InfoNCE Loss (for paired images)
+        # 2. Hybrid Hyperbolic Contrastive Regularization (InfoNCE)
+        # Computes InfoNCE loss in hyperbolic space to structure the embedding space.
         contrastive_logits, contrastive_labels = hyperbolic_info_nce_logits(features=features_hyp, device=device, n_views=n_views , c=curvature,alpha_d=get_alpha_d(epoch, TASK_EPOCHS))
         contrastive_loss = torch.nn.CrossEntropyLoss()(contrastive_logits, contrastive_labels)
         total_contrastive_loss=contrastive_loss.item()
-        # Compute adaptive repel_margin in first batch
+
+        # 3. Adaptive Outlier Repulsion
+        # Compute adaptive repel_margin in first batch based on distance distribution.
         if epoch == 0 and batch_idx == 0:
             dists = hypo_dist(z_mix, prototypes)
             mins = dists.min(dim=1).values
             repel_margin = torch.quantile(mins, 0.8).detach()
             print("Setting adaptive repel_margin to", repel_margin.item())
             
-        # Outlier loss using adaptive margin
+        # Penalize pseudo-novel samples (z_mix) if they fall too close to existing prototypes.
         dist2proto = hypo_dist(z_mix, prototypes)
         min_dist, _ = dist2proto.min(dim=1)
         outlier_loss = F.relu(repel_margin - min_dist).mean()
         total_outlier_loss += outlier_loss.item()
-        # Combine losses (weighted sum)
+
+        # Combine losses (weighted sum as per paper)
         loss = 0.60 * loss_busemann + 0.25 * contrastive_loss + 0.15 * outlier_loss
 
         task_optimizer.zero_grad()
@@ -315,5 +345,5 @@ for epoch in tqdm(range(TASK_EPOCHS), desc="Task Training Epochs"):
     torch.cuda.empty_cache()
     
     if epoch % 5 == 0:
-        save_model(model=global_model, path=f"HypDGCD/checkpoints/{args.dataset_name}/{source_domain_name}/Intermediate_{source_domain_name}_hyper_all_in_trained_model_{epoch}.pkl")
+        save_model(model=global_model, path=f"checkpoints/{args.dataset_name}/{source_domain_name}/Intermediate_{source_domain_name}_trained_model_{epoch}.pkl")
 

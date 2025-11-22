@@ -5,28 +5,20 @@ import random
 import torch
 from torch import nn
 from torch.nn.init import trunc_normal_
-from torch.autograd import Function
 import pandas as pd
 from sklearn.cluster import KMeans
 from sklearn.metrics import normalized_mutual_info_score as nmi_score
 from sklearn.metrics import adjusted_rand_score as ari_score
 from sklearn.metrics.cluster import contingency_matrix
 from scipy.optimize import linear_sum_assignment as linear_assignment
-import matplotlib.pyplot as plt
 from tqdm import tqdm
 from typing import List
-# from data_preprocessing.generate_captions import *
-import wandb
 import torch.nn.functional as F
 import argparse
-from sklearn.manifold import TSNE
 import torch
-import matplotlib.pyplot as plt
 import numpy as np
 import os
-import seaborn as sns
-from sklearn.manifold import TSNE
-from sklearn.decomposition import PCA
+
 
 def set_seed(seed=42):
     """Set the seed for reproducibility."""
@@ -36,6 +28,7 @@ def set_seed(seed=42):
     torch.cuda.manual_seed_all(seed)
     torch.backends.cudnn.deterministic = True
     torch.backends.cudnn.benchmark = False  # Setting this to False may slow down training but ensures deterministic results
+    
 def str2bool(v):
     """
     Convert string to boolean.
@@ -50,49 +43,50 @@ def str2bool(v):
     else:
         raise argparse.ArgumentTypeError('Boolean value expected.')
 
+# class GradientReversalFunction(Function):
+#     @staticmethod
+#     def forward(ctx, x, lambda_):
+#         ctx.lambda_ = lambda_
+#         return x.view_as(x)
 
-class GradientReversalFunction(Function):
-    @staticmethod
-    def forward(ctx, x, lambda_):
-        ctx.lambda_ = lambda_
-        return x.view_as(x)
-
-    @staticmethod
-    def backward(ctx, grad_output):
-        return grad_output.neg() * ctx.lambda_, None
-
-
-def grad_reverse(x, lambda_=1.0):
-    return GradientReversalFunction.apply(x, lambda_)
+#     @staticmethod
+#     def backward(ctx, grad_output):
+#         return grad_output.neg() * ctx.lambda_, None
 
 
-class DomainClassifier(nn.Module):
-    def __init__(self, feature_dim):
-        super(DomainClassifier, self).__init__()
-        self.net = nn.Sequential(
-            nn.Linear(feature_dim, feature_dim // 2),
-            nn.LeakyReLU(),
-            nn.Dropout(0.2),
-            nn.Linear(feature_dim // 2, feature_dim // 4),
-            nn.LeakyReLU(),
-            nn.BatchNorm1d(feature_dim // 4),
-            nn.Linear(feature_dim // 4, feature_dim // 8),
-            nn.LeakyReLU(),
-            nn.Dropout(0.2),
-            nn.Linear(feature_dim // 8, 2)  # Two classes: source vs target
-        )
+# def grad_reverse(x, lambda_=1.0):
+#     return GradientReversalFunction.apply(x, lambda_)
 
-    def forward(self, x, reverse=False):
-        if reverse:
-            x = grad_reverse(x)
-        return self.net(x)
+
+# class DomainClassifier(nn.Module):
+#     def __init__(self, feature_dim):
+#         super(DomainClassifier, self).__init__()
+#         self.net = nn.Sequential(
+#             nn.Linear(feature_dim, feature_dim // 2),
+#             nn.LeakyReLU(),
+#             nn.Dropout(0.2),
+#             nn.Linear(feature_dim // 2, feature_dim // 4),
+#             nn.LeakyReLU(),
+#             nn.BatchNorm1d(feature_dim // 4),
+#             nn.Linear(feature_dim // 4, feature_dim // 8),
+#             nn.LeakyReLU(),
+#             nn.Dropout(0.2),
+#             nn.Linear(feature_dim // 8, 2)  # Two classes: source vs target
+#         )
+
+#     def forward(self, x, reverse=False):
+#         if reverse:
+#             x = grad_reverse(x)
+#         return self.net(x)
 
 def create_list(source_domain: str, num_classes: int = 40) -> list:
     random.seed(42)
+    source_domain = os.path.join("/users/student/pg/pg23/vaibhav.rathore/datasets",source_domain)
     all_folders = [folder for folder in os.listdir(source_domain) if os.path.isdir(os.path.join(source_domain, folder))]
     selected_folders = random.sample(all_folders, num_classes)
     return selected_folders
 
+'''
 def create_csv(source_domain: str, aug_domain: str, csv_dir_path: str, selected_classes: list, episode: int) -> tuple:
     col_names = ['index', 'image_path', 'label', 'numeric_label']
     random.seed(42 + episode)
@@ -161,6 +155,7 @@ def create_csv(source_domain: str, aug_domain: str, csv_dir_path: str, selected_
 
             target_labels = torch.full((index,), float('nan'), dtype=torch.float)
         return csv_train_path, csv_synthetic_path, size  #,labels, labelled_or_not
+'''
 
 def create_combined_csv(combine_csv_path,source_domain: str, synthetic_domains: List[str], selected_classes: List[str],episode: int) -> str:
     col_names = ['index', 'image_path', 'label', 'numeric_label', 'domain_label']
@@ -319,7 +314,7 @@ def create_TrainTest_target_csv(csv_dir_path: str, csv_path: str) -> tuple[str, 
     return path_40_classes, path_65_classes
 
 
-def test_kmeans_cdad(model, 
+def test_kmeans_hidisc(model, 
                      test_loader,
                      epoch, 
                      save_name,
@@ -578,6 +573,7 @@ def split_cluster_acc_v1(y_true, y_pred, mask):
     total_acc = weight * old_acc + (1 - weight) * new_acc
 
     return total_acc, old_acc, new_acc
+
 def split_cluster_acc_v2(y_true, y_pred, mask):
     y_true = y_true.astype(int)
 
@@ -723,82 +719,3 @@ def load_model(path):
     t = t2-t1
     print(f"The model is loaded from {path} and it took {t/60:.2f} mints")
     return model
-# Function to check the number of trainable parameters
-def check_trainable_parameters(model, expected_num_params):
-    num_params = sum(p.numel() for p in model.parameters() if p.requires_grad)
-    print(f"Number of trainable parameters: {num_params}")
-    if num_params != expected_num_params:
-        print("Mismatch in number of trainable parameters!")
-        return False
-    return True
-
-def check_layer_names(model_weights, loaded_weights):
-    """
-    Check if the layer names in two sets of weights are the same.
-    
-    Args:
-    model_weights (dict): A state_dict of a model containing layer names and parameter tensors.
-    loaded_weights (dict): A state_dict of a model loaded from file containing layer names and parameter tensors.
-    
-    Returns:
-    bool: True if all layer names match, False otherwise.
-    """
-    original_layers = set(model_weights.keys())
-    loaded_layers = set(loaded_weights.keys())
-    
-    if original_layers != loaded_layers:
-        missing_in_loaded = original_layers - loaded_layers
-        new_in_loaded = loaded_layers - original_layers
-        if missing_in_loaded:
-            print("Missing layers in loaded model:", missing_in_loaded)
-        if new_in_loaded:
-            print("New layers found in loaded model:", new_in_loaded)
-        return False
-    return True
-
-def log_gradients(params, tag):
-    """
-    Log summary statistics of gradients to WandB for parameters where gradients are being calculated.
-    Args:
-    - params: Iterable of parameters from the model, typically model.named_parameters().
-    - tag: Prefix tag for the logging variable.
-    - step: Current step or epoch to log against.
-    """
-    for name, param in params:
-        if param.requires_grad and param.grad is not None:
-            grad = param.grad.cpu().numpy()
-            grad_mean = np.linalg.norm(grad)
-
-            wandb.log({
-                f"{tag}/{name}_norm": grad_mean,
-            })
-import datetime
-def log_gradients_txt(params, filename = f"gradients_{datetime.datetime.now().strftime('%Y%m%d_%H%M%S')}.txt", batch_idx=None, epoch=None):
-    with open(filename, 'a') as f:
-        f.write(f"--- Epoch: {epoch}, Batch: {batch_idx} ---\n")
-        for name, param in params:
-            if param.requires_grad and param.grad is not None:
-                grad = param.grad.cpu().numpy()
-                grad_norm = np.linalg.norm(grad)
-                f.write(f"Parameter: {name}\n")
-                f.write(f"L2_Norm Gradient: {grad_norm:.6f}\n")
-                f.write("\n")
-        f.write("\n")
-def log_accumulated_gradients(accumulated_grads, tag):
-    """
-    Log summary statistics of accumulated gradients to WandB for the global model before the update.
-    Args:
-    - accumulated_grads: Dictionary containing accumulated gradients.
-    - tag: Prefix tag for the logging variable.
-    - meta_epoch: Current meta epoch to log against.
-    """
-    for name, grad in accumulated_grads.items():
-        grad = grad.cpu().numpy()
-        grad_norm = np.linalg.norm(grad)
-        wandb.log({
-            f"{tag}/{name}_norm": grad_norm,
-        })
-
-def loss_scheduler(epoch,num_epochs,min_weight=20,max_weight=200):
-    return max((max_weight)/num_epochs * (num_epochs - epoch), min_weight)
-
