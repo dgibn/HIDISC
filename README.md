@@ -2,6 +2,12 @@
 
 This repository contains the official implementation of the paper **"HIDISC: A Hyperbolic Framework for Domain Generalization with Generalized Category Discovery"** by Vaibhav Rathore, Divyam Gupta, and Biplab Banerjee.
 
+[![Conference](https://img.shields.io/badge/Conference-grey)](https://your-link.com)
+[![Paper](https://img.shields.io/badge/Paper-blue)](https://your-paper-link.com)
+[![arXiv](https://img.shields.io/badge/arXiv-green)](https://arxiv.org/abs/xxxx.xxxxx)
+[![Project](https://img.shields.io/badge/Project-red)](https://your-project.com)
+[![Poster](https://img.shields.io/badge/Poster-yellow)](https://your-poster-link.com)
+
 ## 📄 Abstract
 
 HIDISC addresses the challenging problem of **Domain Generalization (DG)** combined with **Generalized Category Discovery (GCD)**. In this setting, a model trained on a source domain must generalize to unseen target domains, recognizing known classes while simultaneously discovering and clustering novel classes.
