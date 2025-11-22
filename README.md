@@ -2,11 +2,10 @@
 
 This repository contains the official implementation of the paper **"HIDISC: A Hyperbolic Framework for Domain Generalization with Generalized Category Discovery"** by Vaibhav Rathore, Divyam Gupta, and Biplab Banerjee.
 
-[![Conference](https://img.shields.io/badge/Conference-grey)](https://your-link.com)
-[![Paper](https://img.shields.io/badge/Paper-blue)](https://your-paper-link.com)
-[![arXiv](https://img.shields.io/badge/arXiv-green)](https://arxiv.org/abs/xxxx.xxxxx)
-[![Project](https://img.shields.io/badge/Project-red)](https://your-project.com)
-[![Poster](https://img.shields.io/badge/Poster-yellow)](https://your-poster-link.com)
+[![Conference](https://img.shields.io/badge/Conference-grey)](https://neurips.cc/)
+[![arXiv](https://img.shields.io/badge/arXiv-green)](https://arxiv.org/pdf/2510.17188)
+[![Project](https://img.shields.io/badge/Project-red)]([https://your-project.com](https://vaibhavrathore1999.github.io/HiDISC/))
+[![Poster](https://img.shields.io/badge/Poster-yellow)](https://neurips.cc/media/PosterPDFs/NeurIPS%202025/119696.png?t=1763530622.5565956)
 
 ## 📄 Abstract
 
