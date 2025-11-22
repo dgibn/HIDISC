@@ -112,7 +112,7 @@ bash bash_scripts/test.sh Office_Home 0 50 5
 Results are saved to `HIDISC/Results/<dataset_name>/HIDISC_Results.xlsx`.
 
 ### Getting the final scores
-Use the `Results/report.py` script to get the best overall accuracies for All, Old and New classes.
+Use the `Results/report.py` script to get the best overall average accuracies for All, Old and New classes.
 
 ## 📁 Project Structure
 
