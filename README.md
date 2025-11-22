@@ -45,6 +45,9 @@ Ensure your dataset paths are correctly configured in the CSV files located in t
 
 These files should map image paths to their corresponding labels and domains.
 
+For detailed instructions on setting up the synthetic datasets, please refer to the guide in the D_GCD repository:
+[DATASET.md](https://github.com/Shubh-Nil/D_GCD/blob/main/DATASET.md)
+
 ## 🚀 Training
 
 To train the model, you can use the `scripts/train.py` script. The model is trained on a specific source domain, treating others as unseen target domains.
@@ -127,5 +130,15 @@ If you find this code useful for your research, please consider citing our paper
   booktitle = {Proceedings of the 39th Conference on Neural Information Processing Systems (NeurIPS)},
   year      = {2025}
 }
+```
+
+This repository also utilizes code from the following work:
+
+```bibtex
+@InProceedings{vaze2022gcd,
+               title={Generalized Category Discovery},
+               author={Sagar Vaze and Kai Han and Andrea Vedaldi and Andrew Zisserman},
+               booktitle={IEEE Conference on Computer Vision and Pattern Recognition},
+               year={2022}}
 ```
 
