@@ -18,7 +18,7 @@ import argparse
 import torch
 import numpy as np
 import os
-
+from models.vision_transformer import VisionTransformer
 
 def set_seed(seed=42):
     """Set the seed for reproducibility."""
@@ -81,7 +81,7 @@ def str2bool(v):
 
 def create_list(source_domain: str, num_classes: int = 40) -> list:
     random.seed(42)
-    source_domain = os.path.join("/users/student/pg/pg23/vaibhav.rathore/datasets",source_domain)
+    # source_domain = os.path.join("/users/student/pg/pg23/vaibhav.rathore/datasets",source_domain)
     all_folders = [folder for folder in os.listdir(source_domain) if os.path.isdir(os.path.join(source_domain, folder))]
     selected_folders = random.sample(all_folders, num_classes)
     return selected_folders

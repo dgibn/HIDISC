@@ -24,7 +24,7 @@ export OMP_NUM_THREADS=1
 # conda activate dgcd
 
 # Navigate to the script's directory
-cd "HIDISC/scripts"
+mkdir -p ../output
 
 # -------------------------------------------------------------------
 # Domain Configuration
@@ -33,7 +33,7 @@ cd "HIDISC/scripts"
 # The script will loop through these domains one by one.
 
 # List of domains in the Office Home dataset
-declare -a domains=("Art" "Real_world" "Clipart" "Product")
+declare -a domains=("Real_world" "Clipart" "Product") # "Real_world" "Clipart" "Product")
 # List of domains in the PACS dataset
 # declare -a domains=("art_painting" "sketch" "cartoon" "photo")
 # List of domains in the Domain Net dataset
@@ -56,7 +56,7 @@ do
     #   --penalty:            Penalty weight for Busemann loss
     #
     # Output is redirected to a log file in the output/ directory.
-    python train.py \
+    python scripts/train.py \
         --task_epochs 50 \
         --task_lr 0.01 \
         --batch_size 128 \

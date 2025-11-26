@@ -141,8 +141,9 @@ curvature = nn.Parameter(torch.tensor(args.c, device=device, dtype=torch.float32
                          requires_grad=True)
 
 # Define paths and directories
-source_domain = f"{args.dataset_name}/{source_domain_name}"
-os.makedirs(f"HIDISC/checkpoints/{args.dataset_name}/{source_domain_name}", exist_ok=True)
+# For Source Domain Name replace the prefix with the actual path of your dataset . For my case it was on different path than the current scripts.
+source_domain = f"/janaki/backup/users/student/pg/pg23/vaibhav.rathore/datasets/{args.dataset_name}/{source_domain_name}"
+os.makedirs(f"checkpoints/{args.dataset_name}/{source_domain_name}", exist_ok=True)
 target_data_csv = os.path.join(os.path.dirname(os.path.dirname(__file__)), f"data/dataset_path_{args.dataset_name}.csv")
 
 # Read the target dataset paths from the CSV file
@@ -183,7 +184,7 @@ selected_classes = create_list(source_domain=source_domain, num_classes=NUM_CLAS
 class_names = {i: selected_classes[i] for i in range(NUM_CLASSES)}
 
 # Make combined CSV file for all Synthetic Domains
-combine_csv_path = f'HIDISC/Episode_all_{args.dataset_name}/{source_domain_name}'
+combine_csv_path = f'Episode_all_{args.dataset_name}/{source_domain_name}'
 csv_combined_path = create_combined_csv(combine_csv_path=combine_csv_path,
                                         source_domain=source_domain,
                                         synthetic_domains=target_dataset_paths,
@@ -346,4 +347,3 @@ for epoch in tqdm(range(TASK_EPOCHS), desc="Training Epochs"):
     
     if epoch % 5 == 0:
         save_model(model=global_model, path=f"checkpoints/{args.dataset_name}/{source_domain_name}/Intermediate_{source_domain_name}_trained_model_{epoch}.pkl")
-
